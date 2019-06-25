@@ -50,5 +50,6 @@ redis:
   testOnBorrow: true
   #在空闲时检查有效性, 默认false
   testWhileIdle: true
+
 server:
   port: 1024
