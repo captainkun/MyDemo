@@ -62,7 +62,7 @@ public class Demo {
 
         String sb = "";
 
-        String replace1 = sb.replaceAll("\"\"","service_user.permission_group");
+        String replace1 = sb.replaceAll("\"\"", "service_user.permission_group");
         String replaceAll = replace1.replaceAll("1000\\d\\d\\d\\d", "nextval('permission_group_id_seq')");
         System.out.println(replaceAll);
 
@@ -72,14 +72,6 @@ public class Demo {
     public void test04() {
 
     }
-
-
-
-
-
-
-
-
 
 
     public static void main(String[] args) {
