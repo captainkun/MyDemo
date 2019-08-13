@@ -3,6 +3,7 @@ package com.jike.demo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.jike.demo.entity.Student;
 import org.apache.logging.log4j.util.Strings;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -10,6 +11,8 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.assertj.core.util.Lists;
+import org.springframework.scheduling.Trigger;
 import org.springframework.util.Assert;
 import org.assertj.core.util.DateUtil;
 import org.junit.Test;
@@ -20,6 +23,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.math.BigDecimal;
@@ -59,20 +65,23 @@ public class Demo {
 
     @Test
     public void test02() throws Exception {
-
-        String sb = "";
-
-        String replace1 = sb.replaceAll("\"\"", "service_user.permission_group");
-        String replaceAll = replace1.replaceAll("1000\\d\\d\\d\\d", "nextval('permission_group_id_seq')");
-        System.out.println(replaceAll);
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String temp = "2019/08/01 13:20:5";
+        String time = temp.replaceAll("/", "-");
+        System.out.println(time);
+        System.out.println(sdf.parse(time));
+        System.out.println("2111111");
     }
 
     @Test
-    public void test04() {
-
+    public void test04() throws Exception {
+        System.out.println(new Timestamp(new Date().getTime()));
+        System.out.println(new Date());
     }
 
+    private long runTime(long startTime) {
+        return System.currentTimeMillis() - startTime;
+    }
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);

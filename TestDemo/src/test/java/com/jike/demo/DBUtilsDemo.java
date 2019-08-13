@@ -25,28 +25,13 @@ public class DBUtilsDemo {
             stmt = c.createStatement();
             rs = stmt.executeQuery("select * from service_user.department where type in(20,30,40)");
 
-
-            Map<Long, Long> schoolAreaToArea = new HashMap<>();
-            Map<Long, String> schoolAreaToName = new HashMap<>();
-            Map<Long, String> schoolAreaToAddress = new HashMap<>();
-            Map<Long, List<Long>> areaToschoolAreas = new HashMap<>();
-
             while (rs.next()) {
-                long id = rs.getLong("id");
-                long parent_id = rs.getLong("parent_id");
-                String name = rs.getString("name");
-                String address = rs.getString("address");
 
-                schoolAreaToArea.put(id, parent_id);
-                schoolAreaToName.put(id, name);
-                schoolAreaToAddress.put(id, address);
+                String id = rs.getString("id");
+                System.out.println(id);
             }
 
-            schoolAreaToArea.forEach((schoolArea, area) -> {
-                Long bigArea = schoolAreaToArea.get(area);
-                if ((bigArea == null) || bigArea.equals(10000L)) return;
-                System.out.println("schoolAreaAndAreaMap.put(" + schoolArea + "L"+ ", " +  +bigArea + "L);");
-            });
+
 
 
         } catch (Exception e) {

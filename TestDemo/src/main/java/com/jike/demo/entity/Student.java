@@ -17,7 +17,7 @@ public class Student {
 
     private String nickname;
 
-    private int age;
+    private Integer age;
 
     public long getId() {
         return id;
