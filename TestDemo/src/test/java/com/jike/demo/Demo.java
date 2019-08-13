@@ -67,9 +67,6 @@ public class Demo {
     public void test02() throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String temp = "2019/08/01 13:20:5";
-        String time = temp.replaceAll("/", "-");
-        System.out.println(time);
-        System.out.println(sdf.parse(time));
         System.out.println("2111111");
     }
 
