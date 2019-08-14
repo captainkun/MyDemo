@@ -67,6 +67,7 @@ public class Demo {
     public void test02() throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String temp = "2019/08/01 13:20:5";
+        System.out.println("我要被删除");
         System.out.println("2111111");
     }
 
