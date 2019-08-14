@@ -73,8 +73,7 @@ public class Demo {
 
     @Test
     public void test04() throws Exception {
-        System.out.println(new Timestamp(new Date().getTime()));
-        System.out.println(new Date());
+
     }
 
     private long runTime(long startTime) {
