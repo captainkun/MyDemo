@@ -2,6 +2,7 @@ package com.jike.demo.aspect;
 
 import com.jike.demo.annotation.AvoidReCommit;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -59,11 +60,11 @@ public class AvoidReCommitAspect {
             //过期时间5分钟
             timeout = 60*5;
         }
-        String value = (String) redisTemplate.opsForValue().get(key);
-        if (StringUtils.isNotBlank(value)){
+        Boolean isAbsent = redisTemplate.opsForValue().setIfAbsent(key, Strings.EMPTY);
+        if (isAbsent != null && !isAbsent){
             return "请勿重复提交";
         }
-        redisTemplate.opsForValue().set(key, UUID.randomUUID().toString().substring(0, 5),timeout, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
         //执行方法
         Object object = point.proceed();
         return object;
