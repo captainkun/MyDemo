@@ -7,6 +7,17 @@ spring:
   data:
     redis:
       repositories.enabled: false
+    mongodb:
+      host: ${MONGO_HOST:192.168.32.36}
+      port: 27017
+      database: student_statistics
+      #      username:
+      #      password:
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: LEGACYHTML5
+    cache: false
 #  jpa:
 #    database: postgresql
 #    show-sql: true
@@ -27,6 +38,7 @@ spring:
 #  endpoint: /graphql
 #  enabled: true
 #  pageTitle: GraphiQL
+
 
 redis:
   hostName: 192.168.32.34

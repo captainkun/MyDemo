@@ -1,6 +1,7 @@
 package com.jike.demo.entity;
 
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -18,6 +19,8 @@ public class Student {
     private String nickname;
 
     private Integer age;
+
+    private Map<Integer, String> map;
 
     public long getId() {
         return id;
@@ -51,6 +54,18 @@ public class Student {
         this.age = age;
     }
 
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public Map<Integer, String> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<Integer, String> map) {
+        this.map = map;
+    }
+
     public Student() {
     }
 
@@ -77,6 +92,7 @@ public class Student {
                 ", studentName='" + studentName + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", age=" + age +
+                ", map=" + map +
                 '}';
     }
 }

@@ -1,38 +1,34 @@
 package com.jike.demo;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jike.demo.entity.Son;
 import com.jike.demo.entity.Student;
-import org.apache.logging.log4j.util.Strings;
-import com.google.gson.Gson;
+import com.jike.demo.enums.SeasonEnum;
+import com.sun.org.apache.regexp.internal.CharacterIterator;
+import jdk.nashorn.internal.runtime.regexp.joni.encoding.CharacterType;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.assertj.core.util.Lists;
-import org.springframework.scheduling.Trigger;
-import org.springframework.util.Assert;
-import org.assertj.core.util.DateUtil;
 import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
+import sun.misc.IOUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.math.BigDecimal;
-import java.text.ParseException;
+import java.math.RoundingMode;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.regex.Pattern;
 import java.util.*;
-
-import static jdk.nashorn.internal.objects.Global.print;
+import java.util.stream.Collectors;
 
 /**
  * @author qukun
@@ -42,6 +38,7 @@ import static jdk.nashorn.internal.objects.Global.print;
 public class Demo {
 
     private static Map<String, Integer> classesCacheByGrade = new HashMap<>();
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Test
     public void test01() throws IOException {
@@ -67,14 +64,67 @@ public class Demo {
 
     @Test
     public void test02() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String temp = "2019/08/01 13:20:5";
+        Date date = new Date();
+        System.out.println(sdf);
+        System.out.println(sdf.parse("2019-01-01"));
 
-        System.out.println("2111111");
+    }
+    @Test
+    public void test022() throws Exception {
+        String date = "2020-02-26";
+        LocalDate parse = LocalDate.parse(date);
+        System.out.println(parse);
+    }
+
+    private void initStudent(Student student) {
+        student = new Student();
+        student.setStudentName("阿波吃的");
     }
 
     @Test
     public void test04() throws Exception {
+        List<Student> studentList = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            Student student = new Student();
+            student.setAge(i);
+            student.setId(i++);
+            student.setStudentName("a" + i);
+            studentList.add(student);
+        }
+        long start = System.currentTimeMillis();
+        Map<Integer, Long> collect = studentList.stream().collect(Collectors.toMap(Student::getAge, Student::getId));
+        Map<Integer, String> collect1 = studentList.stream().collect(Collectors.toMap(Student::getAge, Student::getStudentName));
+        System.out.println(System.currentTimeMillis() - start);
+
+        long start2 = System.currentTimeMillis();
+        Map<Integer, Long> map1 = new HashMap<>();
+        Map<Integer, String> map2 = new HashMap<>();
+        studentList.forEach(student -> {
+            map1.put(student.getAge(), student.getId());
+            map2.put(student.getAge(), student.getStudentName());
+        });
+        System.out.println(System.currentTimeMillis() - start2);
+
+
+        long start3 = System.currentTimeMillis();
+        Map<Integer, Long> map3 = new HashMap<>();
+        Map<Integer, String> map4 = new HashMap<>();
+        for (Student student : studentList) {
+            map3.put(student.getAge(), student.getId());
+            map4.put(student.getAge(), student.getStudentName());
+        }
+        System.out.println(System.currentTimeMillis() - start3);
+
+        long start4 = System.currentTimeMillis();
+        Map<Integer, Long> map5 = new HashMap<>();
+        Map<Integer, String> map6 = new HashMap<>();
+        studentList.forEach(student -> {
+            map5.put(student.getAge(), student.getId());
+            map6.put(student.getAge(), student.getStudentName());
+        });
+        System.out.println(System.currentTimeMillis() - start4);
+
+
 
     }
 

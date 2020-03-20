@@ -3,11 +3,13 @@ package com.jike.demo.controller;
 import com.jike.demo.annotation.AvoidReCommit;
 import com.jike.demo.entity.Student;
 import org.apache.commons.io.IOUtils;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +23,7 @@ import java.util.Map;
  * @author qukun
  * @date 2019/3/1
  */
-@RestController
+@Controller
 public class DemoController {
     @GetMapping("get")
     public void getSth(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -43,7 +45,13 @@ public class DemoController {
             e.printStackTrace();
             return "fail";
         }
-
     }
+
+    @GetMapping("/ddd")
+    public String freeMarkerDemo() {
+
+        return "index";
+    }
+
 }
 
