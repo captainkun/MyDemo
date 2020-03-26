@@ -64,9 +64,8 @@ public class Demo {
 
     @Test
     public void test02() throws Exception {
-        Date date = new Date();
-        System.out.println(sdf);
-        System.out.println(sdf.parse("2019-01-01"));
+        System.out.println(new BigDecimal(3).divide(new BigDecimal(3), 5, BigDecimal.ROUND_HALF_UP));
+
 
     }
     @Test

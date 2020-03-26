@@ -2,7 +2,11 @@ package com.jike.demo.controller;
 
 import com.jike.demo.annotation.AvoidReCommit;
 import com.jike.demo.entity.Student;
+import com.jike.demo.service.IDemoService;
+import com.jike.demo.service.impl.SonService;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,13 +22,17 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author qukun
  * @date 2019/3/1
  */
-@Controller
+@RestController
 public class DemoController {
+    @Autowired
+    private IDemoService demoService;
+
     @GetMapping("get")
     public void getSth(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String serverName = request.getServerName();
@@ -47,11 +55,6 @@ public class DemoController {
         }
     }
 
-    @GetMapping("/ddd")
-    public String freeMarkerDemo() {
-
-        return "index";
-    }
 
 }
 
