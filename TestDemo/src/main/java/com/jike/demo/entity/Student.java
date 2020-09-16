@@ -10,8 +10,9 @@ import java.util.Objects;
  * @date 2019/5/30
  */
 
-public class Student {
+public class Student implements Serializable {
 
+    private static final long serialVersionUID = -5364059559850603751L;
     private long id;
 
     @NotNull(message = "学生姓名不能为空")
@@ -47,12 +48,8 @@ public class Student {
         this.nickname = nickname;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
     }
 
     public void setAge(Integer age) {
@@ -67,23 +64,21 @@ public class Student {
         this.map = map;
     }
 
-    public Student() {
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Student student = (Student) o;
         return id == student.id &&
-                age == student.age &&
                 Objects.equals(studentName, student.studentName) &&
-                Objects.equals(nickname, student.nickname);
+                Objects.equals(nickname, student.nickname) &&
+                Objects.equals(age, student.age) &&
+                Objects.equals(map, student.map);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, studentName, nickname, age);
+        return Objects.hash(id, studentName, nickname, age, map);
     }
 
     @Override
