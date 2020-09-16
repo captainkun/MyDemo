@@ -41,10 +41,10 @@ spring:
 
 
 redis:
-  hostName: 192.168.32.34
+  hostName: 192.168.10.38
   port: 6379
   timeout: 10000
-  password: 123456
+  password: Yw2018
   #最大空闲数
   maxIdle: 300
   #连接池的最大数据库连接数。设为0表示无限制,如果是jedis 2.4以后用redis.maxTotal
