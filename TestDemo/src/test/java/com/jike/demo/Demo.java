@@ -3,6 +3,7 @@ package com.jike.demo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jike.demo.entity.SerializerWrapper;
 import com.jike.demo.entity.Son;
 import com.jike.demo.entity.Student;
 import com.jike.demo.enums.SeasonEnum;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.formula.functions.T;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import sun.misc.IOUtils;
@@ -26,6 +28,7 @@ import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,10 +67,24 @@ public class Demo {
 
     @Test
     public void test02() throws Exception {
-        System.out.println(new BigDecimal(3).divide(new BigDecimal(3), 5, BigDecimal.ROUND_HALF_UP));
+
+        Student student = new Student();
+        student.setAge(10);
+        student.setStudentName("学生姓名");
+
+        mutexGetAndSetIfNeeded(student.toString(), () -> new Student(){{ setAge(90);}});
+
 
 
     }
+
+    public <V> V mutexGetAndSetIfNeeded(Object serializedValue,Supplier<? extends V> supplier) {
+        SerializerWrapper<V> wrapper = (SerializerWrapper<V>) serializedValue;
+        V data = wrapper.getData();
+        System.out.println(data);
+        return data;
+    }
+
     @Test
     public void test022() throws Exception {
         String date = "2020-02-26";
