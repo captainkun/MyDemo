@@ -7,6 +7,7 @@ import com.jike.demo.service.impl.SonService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author qukun
@@ -32,6 +34,8 @@ import java.util.Set;
 public class DemoController {
     @Autowired
     private IDemoService demoService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @GetMapping("get")
     public void getSth(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -43,11 +47,15 @@ public class DemoController {
     }
 
     @PostMapping("test")
-    @AvoidReCommit(timeout = 5000)
-    public Object test(@RequestBody @Validated Student student) {
+    @AvoidReCommit(timeout = 5)
+    public Object test(@RequestBody Student student) {
         try {
-            System.out.println("进入Controller");
-            System.out.println(student);
+            String key = "keyOps";
+            redisTemplate.opsForValue().set(key, student);
+            Object keyOps = redisTemplate.opsForValue().get(key);
+            Student student1 = (Student) keyOps;
+            System.out.println(student1);
+            redisTemplate.expire(key, 3, TimeUnit.SECONDS);
             return "success";
         } catch (Exception e) {
             e.printStackTrace();

@@ -7,6 +7,8 @@ import com.jike.demo.entity.SerializerWrapper;
 import com.jike.demo.entity.Son;
 import com.jike.demo.entity.Student;
 import com.jike.demo.enums.SeasonEnum;
+import com.jike.demo.util.JdbcUtils;
+import com.jike.demo.util.SerializableUtils;
 import com.sun.org.apache.regexp.internal.CharacterIterator;
 import jdk.nashorn.internal.runtime.regexp.joni.encoding.CharacterType;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -18,13 +20,14 @@ import org.assertj.core.util.Lists;
 import org.junit.Test;
 import sun.misc.IOUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -67,18 +70,26 @@ public class Demo {
 
     @Test
     public void test02() throws Exception {
-
         Student student = new Student();
         student.setAge(10);
         student.setStudentName("学生姓名");
+        SerializableUtils.serializable(student, "SerializableObject.txt");
+        SerializableUtils.deSerializable("SerializableObject.txt");
 
-        mutexGetAndSetIfNeeded(student.toString(), () -> new Student(){{ setAge(90);}});
+//        SerializableUtils.serializable(new Student(){{setAge(1);}}, "SerializableObject.txt");
+
+
+//        mutexGetAndSetIfNeeded(student.toString(), () -> new Student(){{ setAge(90);}});
+//        mutexGetAndSetIfNeeded(student, () -> student);
 
 
 
     }
 
-    public <V> V mutexGetAndSetIfNeeded(Object serializedValue,Supplier<? extends V> supplier) {
+    public <V> V mutexGetAndSetIfNeeded(Object serializedValue, Supplier<? extends V> supplier) {
+        V v = supplier.get();
+        SerializerWrapper<V> builder = SerializerWrapper.builder(v);
+
         SerializerWrapper<V> wrapper = (SerializerWrapper<V>) serializedValue;
         V data = wrapper.getData();
         System.out.println(data);
@@ -87,25 +98,21 @@ public class Demo {
 
     @Test
     public void test022() throws Exception {
-        String date = "2020-02-26";
-        LocalDate parse = LocalDate.parse(date);
-        System.out.println(parse);
-    }
-
-    private void initStudent(Student student) {
-        student = new Student();
-        student.setStudentName("阿波吃的");
+        Connection connection = JdbcUtils.getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select 1");
+        System.out.println(resultSet.next());
     }
 
     @Test
     public void test04() throws Exception {
         List<Student> studentList = new ArrayList<>();
         for (int i = 0; i < 10000; i++) {
-            Student student = new Student();
-            student.setAge(i);
-            student.setId(i++);
-            student.setStudentName("a" + i);
-            studentList.add(student);
+//            Student student = new Student();
+//            student.setAge(i);
+//            student.setId(i++);
+//            student.setStudentName("a" + i);
+//            studentList.add(student);
         }
         long start = System.currentTimeMillis();
         Map<Integer, Long> collect = studentList.stream().collect(Collectors.toMap(Student::getAge, Student::getId));
@@ -139,7 +146,6 @@ public class Demo {
             map6.put(student.getAge(), student.getStudentName());
         });
         System.out.println(System.currentTimeMillis() - start4);
-
 
 
     }
