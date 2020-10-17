@@ -1,9 +1,10 @@
-package com.jike.demo;
+package com.kun.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+
 
 /**
  * @author qukun
@@ -12,8 +13,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableFeignClients
 @EnableDiscoveryClient
-public class DemoApplication  {
+public class DemoApplication02 {
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class,args);
+        SpringApplication.run(DemoApplication02.class,args);
     }
 }

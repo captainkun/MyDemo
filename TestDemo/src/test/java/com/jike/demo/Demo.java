@@ -1,38 +1,23 @@
 package com.jike.demo;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson.JSON;
 import com.jike.demo.entity.SerializerWrapper;
-import com.jike.demo.entity.Son;
 import com.jike.demo.entity.Student;
-import com.jike.demo.enums.SeasonEnum;
 import com.jike.demo.util.JdbcUtils;
 import com.jike.demo.util.SerializableUtils;
-import com.sun.org.apache.regexp.internal.CharacterIterator;
-import jdk.nashorn.internal.runtime.regexp.joni.encoding.CharacterType;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.formula.functions.T;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
-import sun.misc.IOUtils;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -97,11 +82,23 @@ public class Demo {
     }
 
     @Test
-    public void test022() throws Exception {
+    public void jdbcTest() throws Exception {
         Connection connection = JdbcUtils.getConnection();
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("select 1");
         System.out.println(resultSet.next());
+    }
+
+    @Test
+    public void test1() {
+        double price = 2.85;
+        System.out.println(new BigDecimal(price));
+        System.out.println(new BigDecimal(price).multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_HALF_UP));
+        System.out.println(new BigDecimal(price).multiply(BigDecimal.valueOf(10)).setScale(1, BigDecimal.ROUND_HALF_UP));
+    }
+
+    private void setNickName(Student student) {
+        student.setNickname("惊叫唤");
     }
 
     @Test

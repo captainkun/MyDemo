@@ -1,6 +1,6 @@
 spring:
   application:
-    name: test1
+    name: test2
   datasource:
     url: jdbc:postgresql://127.0.0.1:5432/edu
     driver-class-name: org.postgresql.Driver
@@ -66,7 +66,7 @@ redis:
   testWhileIdle: true
 
 server:
-  port: 1024
+  port: 1025
 
 #配置eureka
 eureka:
