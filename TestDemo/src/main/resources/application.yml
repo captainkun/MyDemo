@@ -2,10 +2,10 @@ spring:
   application:
     name: test1
   datasource:
-    url: jdbc:mysql://192.168.0.232:3306/*
+    url: jdbc:mysql://192.168.0.232:3306/yanwei_cloud_mall
     driver-class-name: com.mysql.jdbc.Driver
-    username: *
-    password: *
+    username: yuntu_mall
+    password: Yt2018
   data:
     redis:
       repositories.enabled: false
