@@ -45,6 +45,11 @@ public class DemoController {
         return feignClientApi.getStudentInfo(name);
     }
 
+    @GetMapping("beetl")
+    public Object beetl() {
+        return demoService.beetl();
+    }
+
 
 }
 

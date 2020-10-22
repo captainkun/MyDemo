@@ -3,12 +3,19 @@ package com.jike.demo;
 import com.alibaba.fastjson.JSON;
 import com.jike.demo.entity.SerializerWrapper;
 import com.jike.demo.entity.Student;
+import com.jike.demo.entity.User;
 import com.jike.demo.util.JdbcUtils;
 import com.jike.demo.util.SerializableUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.assertj.core.util.Lists;
+import org.beetl.sql.core.*;
+import org.beetl.sql.core.db.DBStyle;
+import org.beetl.sql.core.db.MySqlStyle;
+import org.beetl.sql.core.query.LambdaQuery;
+import org.beetl.sql.core.query.Query;
+import org.beetl.sql.ext.DebugInterceptor;
 import org.junit.Test;
 
 import java.io.*;
@@ -17,6 +24,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -68,7 +78,6 @@ public class Demo {
 //        mutexGetAndSetIfNeeded(student, () -> student);
 
 
-
     }
 
     public <V> V mutexGetAndSetIfNeeded(Object serializedValue, Supplier<? extends V> supplier) {
@@ -89,12 +98,11 @@ public class Demo {
         System.out.println(resultSet.next());
     }
 
+//    private static final Object LOCK = new Object();
+
     @Test
     public void test1() {
-        double price = 2.85;
-        System.out.println(new BigDecimal(price));
-        System.out.println(new BigDecimal(price).multiply(BigDecimal.valueOf(100)).setScale(0, BigDecimal.ROUND_HALF_UP));
-        System.out.println(new BigDecimal(price).multiply(BigDecimal.valueOf(10)).setScale(1, BigDecimal.ROUND_HALF_UP));
+
     }
 
     private void setNickName(Student student) {
@@ -145,6 +153,79 @@ public class Demo {
         System.out.println(System.currentTimeMillis() - start4);
 
 
+    }
+
+    /*
+    北京时间东八区：serverTimezone=GMT%2B8
+    上海时间：serverTimezone=Asia/Shanghai
+     */
+    private static final String driver = "com.mysql.jdbc.Driver";
+    private static final String url = "jdbc:mysql://192.168.0.232:3306/*?serverTimezone=GMT%2B8";
+    private static final String userName = "*";
+    private static final String password = "*";
+
+    @Test
+    public void beetlTest() {
+        ConnectionSource source = ConnectionSourceHelper.getSimple(driver, url, userName, password);
+        DBStyle mysql = new MySqlStyle();
+        // sql语句放在classpath的/sql 目录下
+        SQLLoader loader = new ClasspathLoader("/sql");
+        // 数据库命名跟java命名一样，所以采用DefaultNameConversion，还有一个是UnderlinedNameConversion，下划线风格的，
+        UnderlinedNameConversion nc = new UnderlinedNameConversion();
+        // 最后，创建一个SQLManager,DebugInterceptor 不是必须的，但可以通过它查看sql执行情况
+        SQLManager sqlManager = new SQLManager(mysql, loader, source, nc, new Interceptor[]{new DebugInterceptor()});
+
+        try {
+            // 输出User类到控制台
+            sqlManager.genPojoCodeToConsole("user");
+            // 输出简单SQL模板到控制台
+            sqlManager.genSQLTemplateToConsole("user");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        //使用内置的生成的sql 新增用户，如果需要获取主键，可以传入KeyHolder
+        User user = new User();
+        user.setAge(19);
+        user.setName("xiandafu");
+        user.setCreateDate(new Date());
+        sqlManager.insert(user);
+
+        //使用内置sql查询用户
+        int id = 1;
+        user = sqlManager.unique(User.class, id);
+        System.out.println(user);
+
+        //模板更新,仅仅根据id更新值不为null的列
+        User newUser = new User();
+        newUser.setId(1);
+        newUser.setAge(20);
+        sqlManager.updateTemplateById(newUser);
+
+        //模板查询
+        User query = new User();
+        query.setName("xiandafu");
+        List<User> list = sqlManager.template(query);
+        System.out.println(list);
+
+        //Query查询
+        LambdaQuery<User> userLambdaQuery = sqlManager.lambdaQuery(User.class);
+        List<User> users = userLambdaQuery.andEq(User::getName, "xiandafy").select();
+        System.out.println(users);
+
+        //使用user.md 文件里的select语句，参考下一节。
+        User query2 = new User();
+        query.setName("xiandafu");
+        List<User> list2 = sqlManager.select("user.select", User.class, query2);
+        System.out.println(list2);
+
+        //使用user.md 文件里的sample语句，参考下一节。
+        User query3 = new User();
+        query3.setName("xiandafu");
+        query3.setAge(20);
+        List<User> list3 = sqlManager.select("user.sample", User.class, query3);
+        System.out.println(list3);
     }
 
     private long runTime(long startTime) {

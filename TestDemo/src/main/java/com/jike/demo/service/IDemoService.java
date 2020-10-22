@@ -11,4 +11,6 @@ public interface IDemoService {
     void addWhiteList(Long id);
 
     Set<Long> getWhiteList();
+
+    Object beetl();
 }

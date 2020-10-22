@@ -2,10 +2,10 @@ spring:
   application:
     name: test1
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/edu
-    driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: root
+    url: jdbc:mysql://192.168.0.232:3306/*
+    driver-class-name: com.mysql.jdbc.Driver
+    username: *
+    password: *
   data:
     redis:
       repositories.enabled: false
