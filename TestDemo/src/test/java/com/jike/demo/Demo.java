@@ -1,6 +1,8 @@
 package com.jike.demo;
 
 import com.alibaba.fastjson.JSON;
+import com.jike.demo.concurrent.RunnableImpl;
+import com.jike.demo.concurrent.ThreadExtend;
 import com.jike.demo.entity.SerializerWrapper;
 import com.jike.demo.entity.Student;
 import com.jike.demo.entity.User;
@@ -101,7 +103,28 @@ public class Demo {
 //    private static final Object LOCK = new Object();
 
     @Test
-    public void test1() {
+    public void test1() throws InterruptedException {
+        Thread currentThread = Thread.currentThread();
+        String mainThreadName = currentThread.getName();
+        System.out.println(mainThreadName + " run start");
+
+        // first: extend Thread.class
+        ThreadExtend threadExtend = new ThreadExtend();
+
+        // second: implements Runnable.class
+        Thread runnableThread = new Thread(new RunnableImpl());
+
+        // start thread, execute inner run method
+        threadExtend.start();
+        runnableThread.start();
+
+        // join thread, wait for this thread to die, then run the following method.
+        // tips: join method should behind with start method, or it will not be available
+        threadExtend.join();
+        runnableThread.join();
+
+        System.out.println(mainThreadName + " run over");
+
 
     }
 
@@ -160,9 +183,9 @@ public class Demo {
     上海时间：serverTimezone=Asia/Shanghai
      */
     private static final String driver = "com.mysql.jdbc.Driver";
-    private static final String url = "jdbc:mysql://192.168.0.232:3306/*?serverTimezone=GMT%2B8";
-    private static final String userName = "*";
-    private static final String password = "*";
+    private static final String url = "jdbc:mysql://192.168.0.232:3306/yanwei_cloud_mall?serverTimezone=GMT%2B8";
+    private static final String userName = "yuntu_mall";
+    private static final String password = "Yt2018";
 
     @Test
     public void beetlTest() {
