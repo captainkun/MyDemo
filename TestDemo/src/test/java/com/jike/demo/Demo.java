@@ -122,7 +122,7 @@ public class Demo {
         // tips: join method should behind with start method, or it will not be available
         threadExtend.join();
         runnableThread.join();
-
+ 
         System.out.println(mainThreadName + " run over");
 
 
