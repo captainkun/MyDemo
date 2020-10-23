@@ -3,7 +3,7 @@ package com.jike.demo.concurrent;
 /**
  * @author qu.kun
  * @date 2020/10/22
- * @description
+ * @description 实现Runnable接口的方式创建线程
  */
 public class RunnableImpl implements Runnable {
     @Override
