@@ -103,7 +103,7 @@ public class Demo {
 //    private static final Object LOCK = new Object();
 
     @Test
-    public void test1() throws InterruptedException {
+    public void twoWayToCreateThread() throws InterruptedException {
         Thread currentThread = Thread.currentThread();
         String mainThreadName = currentThread.getName();
         System.out.println(mainThreadName + " run start");

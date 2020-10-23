@@ -3,7 +3,7 @@ package com.jike.demo.concurrent;
 /**
  * @author qu.kun
  * @date 2020/10/22
- * @description
+ * @description 继承Thread的方式创建线程
  */
 public class ThreadExtend extends Thread {
 
