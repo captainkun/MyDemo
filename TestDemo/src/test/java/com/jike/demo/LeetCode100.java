@@ -105,9 +105,9 @@ public class LeetCode100 {
 
     示例：
 
-    输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
-    输出：7 -> 0 -> 8
-    原因：342 + 465 = 807
+    输入：(2 -> 4 -> 4) + (5 -> 6 -> 4)
+    输出：7 -> 0 -> 9
+    原因：442 + 465 = 907
 
     来源：力扣（LeetCode）
     链接：https://leetcode-cn.com/problems/add-two-numbers
@@ -117,21 +117,21 @@ public class LeetCode100 {
         //[9]
         //[1,9,9,9,9,9,9,9,9,9]
         ListNode l1 = new ListNode();
-        l1.val = 9;
-//        l1.next = new ListNode(4, new ListNode(3, null));
+        l1.val = 2;
+        l1.next = new ListNode(4);
         ListNode l2 = new ListNode();
-        l2.val = 1;
-        l2.next = new ListNode(9,
-                new ListNode(9,
-                        new ListNode(9,
-                                new ListNode(9,
-                                        new ListNode(9,
-                                                new ListNode(9,
-                                                        new ListNode(9,
-                                                                new ListNode(9,
-                                                                        new ListNode(9)))))))));
+        l2.val = 5;
+        l2.next = new ListNode(6, new ListNode(4));
+
+        Instant start = Instant.now();
         ListNode listNode = addTwoNumbers(l1, l2);
+        System.out.println("耗时(ms)：" + Duration.between(start, Instant.now()).toMillis());
         System.out.println(listNode);
+
+        Instant start2 = Instant.now();
+        ListNode listNode2 = addTwoNumbers_method2(l1, l2);
+        System.out.println("耗时(ms)：" + Duration.between(start2, Instant.now()).toMillis());
+        System.out.println(listNode2);
     }
 
     private ListNode addTwoNumbers(ListNode l1, ListNode l2) {
@@ -144,6 +144,30 @@ public class LeetCode100 {
 
         // 对结果值进行规格封装到
         return getListNode(result);
+    }
+
+    private ListNode addTwoNumbers_method2(ListNode l1, ListNode l2) {
+        ListNode root = new ListNode(0);
+        ListNode cursor = root;
+        int carry = 0;
+        //    输入：(2 -> 4) + (5 -> 6 -> 4)
+        //    输出：7 -> 0 -> 5
+        //    原因：42 + 465 = 507
+        while(l1 != null || l2 != null || carry != 0) {
+            int l1Val = l1 != null ? l1.val : 0;
+            int l2Val = l2 != null ? l2.val : 0;
+            int sumVal = l1Val + l2Val + carry;
+            carry = sumVal / 10;
+
+            ListNode sumNode = new ListNode(sumVal % 10);
+            cursor.next = sumNode;
+            cursor = sumNode;
+
+            if(l1 != null) l1 = l1.next;
+            if(l2 != null) l2 = l2.next;
+        }
+
+        return root.next;
     }
 
     private BigDecimal getNum(ListNode listNode, String numStr) {
