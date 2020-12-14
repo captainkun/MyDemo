@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>加密&解密工具</title>
+</head>
+<style type="text/css">
+    body,
+    html {
+        height: 100%;
+        margin:0;
+    }
+
+    .form-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+    form{
+        width: 400px;
+    }
+    form>div {
+        text-align: center;
+    }
+    form>p{
+        display:flex;
+        justify-content: space-between;
+    }
+    form>p label{
+        flex:1
+    }
+    form>p input:nth-child(2){
+        flex:2;
+        margin-right: 5px;
+    }
+    form>p input:nth-child(3){
+        cursor: pointer;
+        flex: 0.5;
+        border: none;
+        color: #fff;
+        border-radius: 2px;
+        background-color: #FF9800;
+        outline:none
+    }
+    .result-box{
+        width:100%;
+        text-align: center;
+    }
+    .result-box p{
+        height:21px;
+    }
+    .sign-up{
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        color: orange;
+    }
+</style>
+
+<body>
+    <div class="form-box">
+        <form>
+            <h1 align="center">加密&解密ID工具</h1>
+            <hr>
+            <p>
+                <label>全渠道解密: </label><input type="text" id="decrypt" name="decrypt" placeholder="请输入加密ID" />
+                <input type="button" onclick="handleSubmit('decrypt')" id="submitDecrypt" name="submit" value="解密">
+            </p>
+            <hr>
+            <p>
+                <label>太平加密: </label><input type="number" id="tpEncrypt" name="tpEncrypt" placeholder="请输入未加密ID" />
+                <input type="button" onclick="handleSubmit('tpEncrypt')" id="submitTpEncrypt" name="submit" value="加密">
+            </p>
+            <hr>
+            <p>
+                <label>非太平加密: </label><input type="number" id="encrypt" name="encrypt" placeholder="请输入未加密ID" />
+                <input type="button" onclick="handleSubmit('encrypt')" id="submitEncrypt" name="submit" value="加密">
+            </p>
+        </form>
+        <div class="result-box">
+            <h3>加密&解密结果</h3>
+            <p id="content" weight="50"></p>
+        </div>
+    </div>
+
+    <div class="sign-up">
+        Design By : Qu.Kun
+    </div>
+</body>
+
+<script type="text/javascript">
+    //创建ajax函数
+    function ajax(options) {
+        options = options || {};
+        options.type = (options.type || 'GET').toUpperCase();
+        options.dataType = options.dataType || 'json';
+        params = formatParams(options.data);
+
+        //创建-第一步
+        var xhr;
+        //非IE6
+        if (window.XMLHttpRequest) {
+            xhr = new XMLHttpRequest();
+        } else {
+            //ie6及其以下版本浏览器
+            xhr = ActiveXObject('Microsoft.XMLHTTP');
+        }
+
+        //接收-第三步
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                var status = xhr.status;
+                if (status >= 200 && status < 300) {
+                    options.success && options.success(xhr.responseText, xhr.responseXML);
+                } else {
+                    options.error && options.error(status);
+                }
+            }
+        }
+
+        //连接和发送-第二步
+        if (options.type == 'GET') {
+            xhr.open('GET', options.url + '?' + params, true);
+            xhr.send(null);
+        } else if (options.type == 'POST') {
+            xhr.open('POST', options.url, true);
+            //设置表单提交时的内容类型
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(params);
+        }
+    }
+
+    //格式化参数
+    function formatParams(data) {
+        var arr = [];
+        for (var name in data) {
+            arr.push(encodeURIComponent(name) + '=' + encodeURIComponent(data[name]));
+        }
+        return arr.join('&');
+    }
+
+    function handleSubmit(name) {
+        const value = document.getElementById(name).value;
+        var s = value.trim();
+        console.log(s);
+        if (!value) {
+            alert("不能提交空的内容哦");
+            return;
+        }
+
+        if (value.includes(" ")) {
+            alert("里面有空格，不准乱来");
+            return;
+        }
+
+        let options = {
+            url: 'https://api-much-sit2.yanwei365.com/promote/encrypt',
+            type: 'GET',
+            dataType: 'text',
+            data: {
+                [name]: value
+            },
+            success: function (response, xml) {
+                console.log(response)
+                document.getElementById('content').innerHTML = response
+            },
+            error: function (status) {
+                //失败后执行的代码
+                document.getElementById('content').innerHTML = "服务器重启中"
+            }
+        };
+        //调用ajax函数
+        window.ajax(options);
+    }
+</script>
+
+</html>
