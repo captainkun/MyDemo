@@ -8,9 +8,10 @@ import com.jike.demo.entity.Student;
 import com.jike.demo.entity.User;
 import com.jike.demo.util.JdbcUtils;
 import com.jike.demo.util.SerializableUtils;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.assertj.core.util.Lists;
 import org.beetl.sql.core.*;
 import org.beetl.sql.core.db.DBStyle;
@@ -50,14 +51,86 @@ public class Demo {
         HSSFWorkbook workbook = new HSSFWorkbook();
         // 创建工作表
         HSSFSheet sheet = workbook.createSheet("sheet1");
+        // 合并日期占两行(4个参数，分别为起始行，结束行，起始列，结束列)
+        // 行和列都是从0开始计数，且起始结束都会合并
+        CellRangeAddress titleRange = new CellRangeAddress(0, 0, 0, 7);
+        sheet.addMergedRegion(titleRange);
 
-        for (int row = 0; row < 10; row++) {
+        CellRangeAddress orderRange = new CellRangeAddress(1, 1, 1, 2);
+        sheet.addMergedRegion(orderRange);
+        CellRangeAddress shopRange = new CellRangeAddress(2, 2, 1, 2);
+        sheet.addMergedRegion(shopRange);
+        CellRangeAddress remarkRange = new CellRangeAddress(3, 3, 1, 2);
+        sheet.addMergedRegion(remarkRange);
+
+        CellRangeAddress supplierRange = new CellRangeAddress(1, 1, 4, 7);
+        sheet.addMergedRegion(supplierRange);
+        CellRangeAddress sendDateRange = new CellRangeAddress(2, 2, 4, 7);
+        sheet.addMergedRegion(sendDateRange);
+        CellRangeAddress doOrderDateRange = new CellRangeAddress(3, 3, 4, 7);
+        sheet.addMergedRegion(doOrderDateRange);
+
+        CellRangeAddress addrRange = new CellRangeAddress(4, 4, 1, 7);
+        sheet.addMergedRegion(addrRange);
+
+        // 创建字体设置 加粗
+        HSSFFont font = workbook.createFont();
+        font.setBold(true);
+
+        // 创建单元格样式
+        HSSFCellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setAlignment(HorizontalAlignment.CENTER); // 居中
+        cellStyle.setFont(font);
+
+        // 创建title
+        HSSFRow titleRow = sheet.createRow(0);
+        HSSFCell titleCell = titleRow.createCell(0);
+        titleCell.setCellStyle(cellStyle);
+        titleCell.setCellValue("岳池九龙商品订货单");
+
+        String[] attrs = new String[]{"条码", "编码", "品名", "单位", "规格", "数量", "单价", "金额"};
+
+        for (int row = 1; row < 10; row++) {
             HSSFRow rows = sheet.createRow(row);
-            for (int col = 0; col < 10; col++) {
+            if (row == 1) {
+                rows.createCell(0).setCellValue("单号：");
+                rows.createCell(3).setCellValue("供应商：");
+                continue;
+            }
+            if (row == 2) {
+                rows.createCell(0).setCellValue("门店：");
+                rows.createCell(3).setCellValue("送货日期：");
+                continue;
+            }
+            if (row == 3) {
+                rows.createCell(0).setCellValue("备注：");
+                rows.createCell(3).setCellValue("制单日期：");
+                continue;
+            }
+            if (row == 4) {
+                rows.createCell(0).setCellValue("收货地址：");
+                continue;
+            }
+            if (row == 5) {
+                for (int i = 0; i < attrs.length; i++) {
+                    HSSFCell cell = rows.createCell(i);
+                    cell.setCellStyle(cellStyle);
+                    cell.setCellValue(attrs[i]);
+                }
+                continue;
+            }
+
+
+            for (int col = 0; col < 8; col++) {
                 // 向工作表中添加数据
                 rows.createCell(col).setCellValue("哈哈哈" + row + col);
             }
         }
+
+        // 创建总计 这里的10，就是最后一行，取查出来的数据量+1即可
+        HSSFRow totalRow = sheet.createRow(10);
+        HSSFCell totalCell = totalRow.createCell(0);
+        totalCell.setCellValue("总计：");
 
         File xlsFile = new File("poi.xls");
         FileOutputStream xlsStream = new FileOutputStream(xlsFile);
