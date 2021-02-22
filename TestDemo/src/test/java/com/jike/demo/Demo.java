@@ -349,7 +349,7 @@ public class Demo {
 
     @Test
     public void tempTest() {
-        System.out.println("merge1");
+        System.out.println("merge2");
     }
 
 
