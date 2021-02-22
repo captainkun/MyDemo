@@ -350,6 +350,8 @@ public class Demo {
     @Test
     public void tempTest() {
         System.out.println("2");
+        System.out.println("master1");
+        System.out.println("merge2 --no -ff");
     }
 
 
