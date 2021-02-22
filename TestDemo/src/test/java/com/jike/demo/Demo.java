@@ -349,6 +349,7 @@ public class Demo {
 
     @Test
     public void tempTest() {
+        System.out.println("master");
         System.out.println("merge2 --no -ff");
     }
 
