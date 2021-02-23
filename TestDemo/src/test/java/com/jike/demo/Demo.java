@@ -349,14 +349,15 @@ public class Demo {
 
     @Test
     public void tempTest() {
-        System.out.println("rebase");
+        System.out.println("rebase1");
         System.out.println("master1");
         System.out.println("merge2 --no -ff");
+        System.out.println();
     }
 
     @Test
     public void tempTest1() {
-        System.out.println("2");
+        System.out.println("212");
     }
 
 }
