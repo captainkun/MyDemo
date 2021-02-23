@@ -357,7 +357,7 @@ public class Demo {
 
     @Test
     public void tempTest1() {
-        System.out.println("5");
+        System.out.println("6");
     }
 
 }
