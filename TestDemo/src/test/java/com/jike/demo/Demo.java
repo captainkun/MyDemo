@@ -341,7 +341,7 @@ public class Demo {
                 System.out.println("正确答案为:0,请再次输入答案:");
                 text = scanner.next();
             } else {
-                System.out.println("回答错误,请重新输入答案:");
+                System.out.println("回答错误,请重新输入答案 :");
                 text = scanner.next();
             }
         }
