@@ -352,6 +352,7 @@ public class Demo {
         System.out.println("rebase1");
         System.out.println("master1");
         System.out.println("merge2 --no -ff");
+        System.out.println();
     }
 
     @Test
