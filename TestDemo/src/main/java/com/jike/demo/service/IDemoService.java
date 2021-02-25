@@ -13,4 +13,6 @@ public interface IDemoService {
     Set<Long> getWhiteList();
 
     Object beetl();
+
+    void scheduleService();
 }

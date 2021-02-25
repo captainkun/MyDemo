@@ -3,7 +3,6 @@ package com.jike.demo.controller;
 import com.jike.demo.api.FeignClientApi;
 import com.jike.demo.entity.Student;
 import com.jike.demo.service.IDemoService;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +32,6 @@ public class DemoController {
     @GetMapping("get")
     public void getSth(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String serverName = request.getServerName();
-        IOUtils.write(serverName,response.getOutputStream(), Charset.defaultCharset());
         response.setHeader("Content-Encoding", "gzip");
         response.setHeader("MyDIYHeader","测试成功");
         response.setHeader("refresh", "3;url='http://www.baidu.com'");

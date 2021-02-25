@@ -9,6 +9,7 @@ import org.beetl.sql.core.query.LambdaQuery;
 import org.beetl.sql.core.query.Query;
 import org.beetl.sql.ext.DebugInterceptor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -99,6 +100,12 @@ public class DemoServiceImpl implements IDemoService {
 //        UserDao dao = sqlManager.getMapper(UserDao.class);
 //        List<User> list3 = dao.select(query2);
         return null;
+    }
+
+    @Override
+//    @Scheduled(cron = "0/1 * * * * ? ")
+    public void scheduleService() {
+        System.out.println("定时任务执行");
     }
 
 
