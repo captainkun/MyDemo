@@ -16,7 +16,6 @@ import java.util.Map;
 public class TextDirective implements TemplateDirectiveModel {
     @Override
     public void execute(Environment environment, Map map, TemplateModel[] templateModels, TemplateDirectiveBody templateDirectiveBody) throws TemplateException, IOException {
-        System.out.println(map);
         templateDirectiveBody.render(environment.getOut());
     }
 }
