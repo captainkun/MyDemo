@@ -14,9 +14,19 @@ import java.util.Objects;
  */
 public class WechatRobotMsg {
 
-    private static final WechatRobotMsg wechatRobotMsg = new WechatRobotMsg();
+    private volatile static WechatRobotMsg wechatRobotMsg = null;
+
+    private WechatRobotMsg() {
+    }
 
     public static WechatRobotMsg getInstance() {
+        if (wechatRobotMsg == null) {
+            synchronized (WechatRobotMsg.class) {
+                if (wechatRobotMsg == null) {
+                    wechatRobotMsg = new WechatRobotMsg();
+                }
+            }
+        }
         return wechatRobotMsg;
     }
 
