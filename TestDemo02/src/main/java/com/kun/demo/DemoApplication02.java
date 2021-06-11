@@ -1,5 +1,6 @@
 package com.kun.demo;
 
+import com.kun.utils.common.Ali110Utils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -15,6 +16,14 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableDiscoveryClient
 public class DemoApplication02 {
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication02.class,args);
+        boolean isRunOk = true;
+        try {
+            SpringApplication.run(DemoApplication02.class,args);
+        } catch (Exception e) {
+            isRunOk = false;
+            e.printStackTrace();
+        } finally {
+            Ali110Utils.runAliCloudCMSClient(isRunOk);
+        }
     }
 }

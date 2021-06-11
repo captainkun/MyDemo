@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: test1
   datasource:
     url: jdbc:mysql://192.168.0.232:3306/yanwei_cloud_mall
     driver-class-name: com.mysql.jdbc.Driver
@@ -20,6 +18,18 @@ spring:
     suffix: .html
     mode: LEGACYHTML5
     cache: false
+  cloud:
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8858
+#        client-ip: 192.168.0.33
+
+#  boot:
+#    admin:
+#      client:
+#        url: http://localhost:5203
+
 #  jpa:
 #    database: postgresql
 #    show-sql: true
@@ -43,7 +53,7 @@ spring:
 
 
 redis:
-  hostName: 192.168.10.38
+  hostName: 120.78.141.1141
   port: 6379
   timeout: 10000
   password: Yw2018
@@ -69,14 +79,18 @@ server:
   port: 1024
 
 #配置eureka
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-  instance:
-    status-page-url-path: /info
-    health-check-url-path: /health
-
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka
+#  instance:
+#    status-page-url-path: /actuator/info
+#    health-check-url-path: /actuator/health
+#    instance-id: ${spring.cloud.client.ipaddress}:${server.port}
+#    metadata-map:
+#      startup: ${random.int}
+#      management:
+#        context-path: /actuator
 #feign的配置，连接超时及读取超时配置
 feign:
   client:
@@ -85,3 +99,6 @@ feign:
         connectTimeout: 5000
         readTimeout: 5000
         loggerLevel: basic
+  # Sentinel适配Feign
+  sentinel:
+    enabled: true

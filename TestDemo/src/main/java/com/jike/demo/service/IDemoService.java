@@ -15,4 +15,8 @@ public interface IDemoService {
     Object beetl();
 
     void scheduleService();
+
+    void threadTest();
+
+    String sayHello(String name);
 }

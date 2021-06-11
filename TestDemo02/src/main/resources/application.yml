@@ -1,81 +1,43 @@
 spring:
   application:
     name: test2
-  datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/edu
-    driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: root
-  data:
-    redis:
-      repositories.enabled: false
-    mongodb:
-      host: ${MONGO_HOST:192.168.32.36}
-      port: 27017
-      database: student_statistics
-      #      username:
-      #      password:
-  thymeleaf:
-    prefix: classpath:/templates/
-    suffix: .html
-    mode: LEGACYHTML5
-    cache: false
-#  jpa:
-#    database: postgresql
-#    show-sql: true
-#    hibernate:
-#      ddl-auto: update
-#    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
-#    properties:
-#      hibernate:
-#        temp:
-#          use_jdbc_metadata_defaults: false
-#graphql:
-#  servlet:
-#    mapping: /graphql
-#    enabled: true
-#    corsEnabled: true
-#graphiql:
-#  mapping: /graphiql
-#  endpoint: /graphql
-#  enabled: true
-#  pageTitle: GraphiQL
+#  boot:
+#    admin:
+#      client:
+#        url: http://localhost:5203
 
 
-redis:
-  hostName: 192.168.10.38
-  port: 6379
-  timeout: 10000
-  password: Yw2018
-  #最大空闲数
-  maxIdle: 300
-  #连接池的最大数据库连接数。设为0表示无限制,如果是jedis 2.4以后用redis.maxTotal
-  #redis.maxActive=600
-  maxTotal: 1000
-  #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
-  maxWaitMillis: 3000
-  #连接的最小空闲时间 默认1800000毫秒(30分钟)
-  minEvictableIdleTimeMillis: 300000
-  #每次释放连接的最大数目,默认3
-  numTestsPerEvictionRun: 1024
-  #逐出扫描的时间间隔(毫秒) 如果为负数,则不运行逐出线程, 默认-1
-  timeBetweenEvictionRunsMillis: 30000
-  #是否在从池中取出连接前进行检验,如果检验失败,则从池中去除连接并尝试取出另一个
-  testOnBorrow: true
-  #在空闲时检查有效性, 默认false
-  testWhileIdle: true
 
 server:
   port: 1025
-
+  servlet:
+    context-path: /demo2
 #配置eureka
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
   instance:
-    status-page-url-path: /info
-    health-check-url-path: /health
+#    ${server.servlet.context-path}
+    status-page-url-path: ${server.servlet.context-path}/actuator/info
+    health-check-url-path: ${server.servlet.context-path}/actuator/health
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipaddress}:${server.port}
+    metadata-map:
+      startup: ${random.int}
+      management:
+        context-path: ${server.servlet.context-path}/actuator
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+
 
 #feign的配置，连接超时及读取超时配置
 feign:

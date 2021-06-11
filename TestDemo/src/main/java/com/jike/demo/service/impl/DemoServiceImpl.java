@@ -1,17 +1,22 @@
 package com.jike.demo.service.impl;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.jike.demo.entity.User;
 import com.jike.demo.service.IDemoService;
+import com.jike.demo.service.IProducer;
 import org.beetl.sql.core.*;
 import org.beetl.sql.core.db.DBStyle;
 import org.beetl.sql.core.db.MySqlStyle;
 import org.beetl.sql.core.query.LambdaQuery;
 import org.beetl.sql.core.query.Query;
 import org.beetl.sql.ext.DebugInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -31,6 +36,8 @@ public class DemoServiceImpl implements IDemoService {
     private String userName;
     @Value("${spring.datasource.password}")
     private String password;
+    @Autowired
+    private IProducer producer;
 
     private static Set<Long> whiteList = new CopyOnWriteArraySet<>();
 
@@ -106,6 +113,30 @@ public class DemoServiceImpl implements IDemoService {
 //    @Scheduled(cron = "0/1 * * * * ? ")
     public void scheduleService() {
         System.out.println("定时任务执行");
+    }
+
+    @Override
+    @Async
+    public void threadTest() {
+        saleProduct(BigDecimal.ZERO);
+        System.out.println("主线程执行完毕");
+    }
+
+    @Override
+    @SentinelResource(value = "sayHello")
+    public String sayHello(String name) {
+        return "Hello," + name;
+    }
+
+
+    public void saleProduct(BigDecimal money) {
+        try {
+            Thread.sleep(2000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("异步方法执行了");
+        System.out.println("销售成功，销售额：" + money);
     }
 
 

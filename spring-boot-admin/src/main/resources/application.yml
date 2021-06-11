@@ -1,0 +1,28 @@
+server.port: 5203
+
+spring:
+  application:
+    name: spring-boot-admin
+  profiles:
+    active: DEV
+
+
+# 配置eureka
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipaddress}:${server.port}
+    lease-renewal-interval-in-seconds: 15
+    lease-expiration-duration-in-seconds: 15
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS

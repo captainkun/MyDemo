@@ -1,13 +1,18 @@
 package com.jike.demo;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.jike.demo.concurrent.RunnableImpl;
 import com.jike.demo.concurrent.ThreadExtend;
 import com.jike.demo.entity.SerializerWrapper;
 import com.jike.demo.entity.Student;
 import com.jike.demo.entity.User;
+import com.jike.demo.headfirst.wepon.*;
+import com.jike.demo.headfirst.wepon.Character;
 import com.jike.demo.util.JdbcUtils;
 import com.jike.demo.util.SerializableUtils;
+import com.kun.utils.common.WechatRobotMsg;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -20,13 +25,15 @@ import org.beetl.sql.core.query.LambdaQuery;
 import org.beetl.sql.core.query.Query;
 import org.beetl.sql.ext.DebugInterceptor;
 import org.junit.Test;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.time.*;
+import java.util.Date;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -168,9 +175,20 @@ public class Demo {
     @Test
     public void jdbcTest() throws Exception {
         Connection connection = JdbcUtils.getConnection();
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("select 1");
+        connection.setAutoCommit(false);
+
+        PreparedStatement preparedStatement = connection.prepareStatement("update lt_test set count = 9 where id = 4");
+        int i = preparedStatement.executeUpdate();
+
+        System.out.println("更新条数：" + i);
+        PreparedStatement preparedStatement1 = connection.prepareStatement("select * from lt_test where id = 4");
+        ResultSet resultSet = preparedStatement1.executeQuery();
         System.out.println(resultSet.next());
+
+
+        connection.commit();
+        JdbcUtils.close(connection, preparedStatement1);
+        preparedStatement.close();
     }
 
 //    private static final Object LOCK = new Object();
@@ -346,18 +364,39 @@ public class Demo {
             }
         }
     }
-
+    private static final String FIT_TELL_URL = "https://fittest.pkufi.com/cserverApi/api/shop/coup/state/get?param=";
     @Test
     public void tempTest() {
-        System.out.println("rebase1");
-        System.out.println("master1");
-        System.out.println("merge2 --no -ff");
-        System.out.println("master修改文件1");
+        Student student = new Student();
+        student.setStudentName("屈锟");
+        Map<Integer, Student> map = new HashMap<>();
+        map.put(1, student);
+        System.out.println(map);
+        map.forEach((k, v) -> {
+            v.setAge(18);
+            v.setStudentName("帅比");
+        });
+        System.out.println(map);
+
     }
 
     @Test
     public void tempTest1() {
-        System.out.println("6");
+        /*
+        * 策略模式：
+        * 1. 找出应用中可能需要变化之处，把它们独立出来，不要和那些不需要变化的代码混在一起。
+        * 2. 针对接口编程，而不是针对实现编程。
+        * 3. 多用组合，少用继承。
+        */
+        fightGame(new King(), new SwordBehavior());
+        fightGame(new Queen(), new BowAndArrowBehavior());
+
+    }
+
+    private void fightGame(Character character, WeaponBehavior weaponBehavior) {
+        character.fight();
+        character.setWeaponBehavior(weaponBehavior);
+        character.fightWithWeapon();
     }
 
 }

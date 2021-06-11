@@ -25,3 +25,12 @@ eureka:
     enable-self-preservation: true
     # 续期时间，即扫描失效服务的间隔时间（缺省为60*1000ms）
     eviction-interval-timer-in-ms: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
