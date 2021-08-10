@@ -1,7 +1,8 @@
-package com.jike.demo.util.tim;
+package com.jike.demo.tim.util;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jike.demo.tim.pojo.TIMMsgElement;
 import lombok.Builder;
 import lombok.Data;
 

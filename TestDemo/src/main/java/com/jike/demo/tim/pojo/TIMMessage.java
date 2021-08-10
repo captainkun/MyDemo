@@ -1,4 +1,4 @@
-package com.jike.demo.util.tim;
+package com.jike.demo.tim.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

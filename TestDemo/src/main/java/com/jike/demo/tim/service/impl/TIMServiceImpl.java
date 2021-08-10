@@ -1,37 +1,25 @@
-package com.jike.demo.util.tim.service.impl;
+package com.jike.demo.tim.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.Page;
-import com.jike.demo.util.tim.service.ITIMService;
-import com.yanwei.cloud.message.config.TIMConfig;
-import com.yanwei.cloud.message.constant.TIMConstant;
-import com.yanwei.cloud.message.domain.im.*;
-import com.yanwei.cloud.message.util.TIMGenerateUserSig;
-import com.yanwei.cloud.pojo.enums.GenderEnum;
-import com.yanwei.cloud.pojo.enums.im.TIMTagEnum;
-import com.yanwei.cloud.pojo.enums.user.UserTypeEnum;
-import com.yanwei.cloud.pojo.model.BaseModel;
-import com.yanwei.cloud.pojo.model.user.Customer;
-import com.yanwei.cloud.pojo.model.user.TaiPingCard;
-import com.yanwei.cloud.provider.mobile.user.ICustomerProvider;
-import com.yanwei.cloud.provider.user.ITaipingUserProvider;
-import com.yanwei.cloud.starter.common.crypto.impl.IntegerEncryptor;
-import com.yanwei.cloud.starter.common.enums.ResponseCodeEnum;
-import com.yanwei.cloud.starter.common.exception.BusinessException;
-import com.yanwei.cloud.starter.common.util.CollectionUtils;
-import com.yanwei.cloud.starter.common.util.NumberUtils;
-import com.yanwei.cloud.starter.common.util.StringUtils;
-import com.yanwei.cloud.starter.common.util.SystemClock;
-import com.yanwei.cloud.starter.web.util.IAttachmentUrlProvider;
+import com.jike.demo.tim.config.TIMConfig;
+import com.jike.demo.tim.constant.TIMConstant;
+import com.jike.demo.tim.pojo.TIMMessage;
+import com.jike.demo.tim.pojo.TIMMsgElement;
+import com.jike.demo.tim.pojo.TIMTagValue;
+import com.jike.demo.tim.service.ITIMService;
+import com.jike.demo.tim.util.TIMGenerateUserSig;
+import com.kun.utils.exception.BusinessException;
+import com.kun.utils.exception.ResultCode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,14 +33,8 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 public class TIMServiceImpl extends TIMConfig implements ITIMService {
-    @Resource
-    private ICustomerProvider customerProvider;
-    @Resource
-    private IAttachmentUrlProvider attachmentUrlProvider;
     @Autowired
     private RestTemplate restTemplate;
-    @Resource
-    private ITaipingUserProvider taipingUserProvider;
 
     /**
      * 腾讯IM接口地址：导入账号
@@ -89,25 +71,25 @@ public class TIMServiceImpl extends TIMConfig implements ITIMService {
 
     @Override
     public void batchImportId(List<String> userSids) {
-        // 根据入参情况查库获取用户信息
-        List<Customer> customerList = getCustomers(userSids);
-        if (customerList == null) return;
-
-        // 随机数实例
-        Random random = new Random();
-
-        // 添加IM账号
-        importSids(customerList, random);
-
-        // 设置用户资料
-        batchSetUserInfoByCustoms(customerList);
+//        // 根据入参情况查库获取用户信息
+//        List<Customer> customerList = getCustomers(userSids);
+//        if (customerList == null) return;
+//
+//        // 随机数实例
+//        Random random = new Random();
+//
+//        // 添加IM账号
+//        importSids(customerList, random);
+//
+//        // 设置用户资料
+//        batchSetUserInfoByCustoms(customerList);
     }
 
     @Override
     public String sendImSingleMsg(String fromAccount, String toAccount, TIMMsgElement msgElement) {
         // 参数校验
         if (StringUtils.isAllBlank(fromAccount, toAccount) || Objects.isNull(msgElement)) {
-            throw new BusinessException(ResponseCodeEnum.PARAMETER_REQUIRED);
+            throw BusinessException.of("参数必传", ResultCode.DATA_IS_WRONG);
         }
 
         // 请求随机数设置
@@ -139,7 +121,7 @@ public class TIMServiceImpl extends TIMConfig implements ITIMService {
     public Map<String, Integer> getUnreadMsgNums(String toAccount, List<String> peerAccounts) {
         // 参数校验
         if (StringUtils.isBlank(toAccount) || CollectionUtils.isEmpty(peerAccounts)) {
-            throw new BusinessException(ResponseCodeEnum.PARAMETER_REQUIRED);
+            throw BusinessException.of("参数必传", ResultCode.DATA_IS_WRONG);
         }
 
         // 拼接请求路径
@@ -181,7 +163,7 @@ public class TIMServiceImpl extends TIMConfig implements ITIMService {
     public Integer getUnreadMsgNums(String toAccount) {
         // 参数校验
         if (StringUtils.isBlank(toAccount)) {
-            throw new BusinessException(ResponseCodeEnum.PARAMETER_REQUIRED);
+            throw BusinessException.of("参数必传", ResultCode.DATA_IS_WRONG);
         }
 
         // 拼接请求路径
@@ -248,7 +230,7 @@ public class TIMServiceImpl extends TIMConfig implements ITIMService {
     @Override
     public void setUserInfo(String fromAccount, List<TIMTagValue> tagValueList) {
         if (StringUtils.isBlank(fromAccount) || CollectionUtils.isEmpty(tagValueList)) {
-            throw new BusinessException(ResponseCodeEnum.PARAMETER_REQUIRED);
+            throw BusinessException.of("参数必传", ResultCode.DATA_IS_WRONG);
         }
 
         JSONObject reqObj = new JSONObject();
@@ -269,195 +251,195 @@ public class TIMServiceImpl extends TIMConfig implements ITIMService {
         return random.nextInt(1294967290) + LocalDateTime.now().getSecond() + 1;
     }
 
-    private void batchSetUserInfoByCustoms(List<Customer> customerList) {
-        int runNums2 = 0;
-        long startTime2 = 0L;
-        for (Customer user : customerList) {
-            String userSid;
-            Integer userId = user.getId();
-            if (Objects.equals(user.getChannelId(), 101)) {
-                userSid = NumberUtils.compressTP(userId.longValue());
-            } else {
-                userSid = IntegerEncryptor.compress(userId);
-            }
-            String nickname = user.getNickname();
-            String imagePath = user.getAvatarImagePath();
-            GenderEnum gender = user.getGender();
-
-            // 昵称
-            TIMTagValue nickNameTag = TIMTagValue.builder()
-                    .tag(TIMTagEnum.Tag_Profile_IM_Nick)
-                    .value(nickname)
-                    .build();
-            // 头像
-            TIMTagValue imgTag = TIMTagValue.builder()
-                    .tag(TIMTagEnum.Tag_Profile_IM_Image)
-                    .value(attachmentUrlProvider.toHttpUrl(imagePath))
-                    .build();
-
-            // 性别
-            String genderValue;
-            switch (gender) {
-                case MALE:
-                    genderValue = "Gender_Type_Male";
-                    break;
-                case FEMALE:
-                    genderValue = "Gender_Type_Female";
-                    break;
-                default:
-                    genderValue = "Gender_Type_Unknown";
-                    break;
-            }
-            TIMTagValue genderTag = TIMTagValue.builder()
-                    .tag(TIMTagEnum.Tag_Profile_IM_Gender)
-                    .value(genderValue)
-                    .build();
-
-            // 多个属性封装为集合
-            List<TIMTagValue> timTagValues = Arrays.asList(nickNameTag,
-                    imgTag,
-                    genderTag);
-
-            // 发起请求
-            runNums2++;
-            setUserInfo(userSid, timTagValues);
-
-            if (startTime2 == 0L) {
-                startTime2 = SystemClock.now();
-            }
-            if (runNums2 == 200) {
-                // 限制每秒请求200次
-                limitRunTimes(startTime2);
-                startTime2 = 0L;
-                runNums2 = 0;
-            }
-        }
-    }
-
-    private void importSids(List<Customer> customerList, Random random) {
-        // 添加IM账号
-        int runNums = 0;
-        long startTime = 0L;
-
-        // 每次最多导入100个用户
-        List<List<Customer>> user100List = getBatchNumList(customerList, 100);
-
-        for (List<Customer> users : user100List) {
-            List<String> userSidList = users.stream().map(obj -> {
-                Integer userId = obj.getId();
-                if (obj.getChannelId().equals(101)) {
-                    return NumberUtils.compressTP(userId.longValue());
-                } else {
-                    return IntegerEncryptor.compress(userId);
-                }
-            }).collect(Collectors.toList());
-
-            int randomNum = random.nextInt(1294967290) + LocalDateTime.now().getSecond() + 1;
-            String adminSig = TIMGenerateUserSig.genAdminUserSig();
-            String requestUrl = String.format(IMPORT_ID_URL, SDK_APP_ID, ADMIN_ID, adminSig, randomNum);
-            JSONObject jsonObject = JSONObject.parseObject("{\"Accounts\":[]}");
-            JSONArray accounts = jsonObject.getJSONArray("Accounts");
-            accounts.addAll(userSidList);
-
-            if (startTime == 0L) {
-                startTime = SystemClock.now();
-            }
-
-            // 发起请求
-            runNums++;
-            executeUrlRequest(requestUrl, jsonObject);
-            if (startTime == 0L) {
-                startTime = SystemClock.now();
-            }
-
-            if (runNums == 100) {
-                // 限制每秒请求100次
-                limitRunTimes(startTime);
-                startTime = 0L;
-                runNums = 0;
-            }
-        }
-    }
-
-    private List<Customer> getCustomers(List<String> userSids) {
-        List<Customer> customerList;
-        List<TaiPingCard> userCardList = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(userSids)) {
-            List<Integer> userIdList = userSids.stream().map(IntegerEncryptor::uncompress).collect(Collectors.toList());
-            // 查询用户表中的信息
-            Map<Integer, Customer> customerMap = customerProvider.findCustomerByIds(userIdList);
-            if (MapUtils.isEmpty(customerMap)) {
-                return null;
-            }
-            customerList = new ArrayList<>(customerMap.values());
-            List<Long> userIdListInDB = customerList.stream().map(BaseModel::getId).map(Integer::longValue).collect(Collectors.toList());
-            // 查找太平的用户名片信息
-            userCardList = taipingUserProvider.findUserCards(userIdListInDB);
-        } else {
-            Customer queryCustomer = new Customer();
-            queryCustomer.setUserType(UserTypeEnum.EMPLOYEE);
-            queryCustomer.setChannelId(101);
-            // 查询用户表中的信息
-            Page<Customer> customerPage1 = customerProvider.findCustomerByChannelId(101, UserTypeEnum.EMPLOYEE.getCode(), 1, 100);
-            customerList = customerPage1.getResult();
-            if (CollectionUtils.isEmpty(customerList)) {
-                return null;
-            }
-
-            int pages = customerPage1.getPages();
-            if (pages > 1) {
-                for (int i = 2; i < pages + 2; i++) {
-                    Page<Customer> customerPage = customerProvider.findCustomerByChannelId(101, UserTypeEnum.EMPLOYEE.getCode(), i, 100);
-                    List<Customer> result = customerPage.getResult();
-                    if (CollectionUtils.isEmpty(result)) {
-                        break;
-                    }
-                    customerList.addAll(result);
-
-                    // 查找太平的用户名片信息
-                    List<Long> userIdList = result.stream().map(BaseModel::getId).map(Integer::longValue).collect(Collectors.toList());
-                    List<TaiPingCard> userCards = taipingUserProvider.findUserCards(userIdList);
-                    if (CollectionUtils.isNotEmpty(userCards)) {
-                        userCardList.addAll(userCards);
-                    }
-
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        log.error("睡眠GG", e);
-                    }
-                }
-            }
-
-        }
-
-        if (CollectionUtils.isEmpty(userCardList)) {
-            log.info("无用户名片信息");
-            return customerList;
-        }
-
-        // 有名片的优先取名片头像和名字,否则取个人中心的信息
-        Map<Long, TaiPingCard> userIdAndCardMap = userCardList.stream().collect(Collectors.toMap(TaiPingCard::getId, obj -> obj));
-        for (Customer customer : customerList) {
-            TaiPingCard taiPingCard = userIdAndCardMap.get(customer.getId().longValue());
-            if (Objects.isNull(taiPingCard)) {
-                continue;
-            }
-
-            // 名片名字
-            String title = taiPingCard.getTitle();
-            // 名片中的头像
-            String userImagePath = taiPingCard.getUserImagePath();
-            if (StringUtils.isNotBlank(title)) {
-                customer.setNickname(title);
-            }
-            if (StringUtils.isNotBlank(userImagePath)) {
-                customer.setAvatarImagePath(userImagePath);
-            }
-        }
-
-        return customerList;
-    }
+//    private void batchSetUserInfoByCustoms(List<Customer> customerList) {
+//        int runNums2 = 0;
+//        long startTime2 = 0L;
+//        for (Customer user : customerList) {
+//            String userSid;
+//            Integer userId = user.getId();
+//            if (Objects.equals(user.getChannelId(), 101)) {
+//                userSid = NumberUtils.compressTP(userId.longValue());
+//            } else {
+//                userSid = IntegerEncryptor.compress(userId);
+//            }
+//            String nickname = user.getNickname();
+//            String imagePath = user.getAvatarImagePath();
+//            GenderEnum gender = user.getGender();
+//
+//            // 昵称
+//            TIMTagValue nickNameTag = TIMTagValue.builder()
+//                    .tag(TIMTagEnum.Tag_Profile_IM_Nick)
+//                    .value(nickname)
+//                    .build();
+//            // 头像
+//            TIMTagValue imgTag = TIMTagValue.builder()
+//                    .tag(TIMTagEnum.Tag_Profile_IM_Image)
+//                    .value(attachmentUrlProvider.toHttpUrl(imagePath))
+//                    .build();
+//
+//            // 性别
+//            String genderValue;
+//            switch (gender) {
+//                case MALE:
+//                    genderValue = "Gender_Type_Male";
+//                    break;
+//                case FEMALE:
+//                    genderValue = "Gender_Type_Female";
+//                    break;
+//                default:
+//                    genderValue = "Gender_Type_Unknown";
+//                    break;
+//            }
+//            TIMTagValue genderTag = TIMTagValue.builder()
+//                    .tag(TIMTagEnum.Tag_Profile_IM_Gender)
+//                    .value(genderValue)
+//                    .build();
+//
+//            // 多个属性封装为集合
+//            List<TIMTagValue> timTagValues = Arrays.asList(nickNameTag,
+//                    imgTag,
+//                    genderTag);
+//
+//            // 发起请求
+//            runNums2++;
+//            setUserInfo(userSid, timTagValues);
+//
+//            if (startTime2 == 0L) {
+//                startTime2 = SystemClock.now();
+//            }
+//            if (runNums2 == 200) {
+//                // 限制每秒请求200次
+//                limitRunTimes(startTime2);
+//                startTime2 = 0L;
+//                runNums2 = 0;
+//            }
+//        }
+//    }
+//
+//    private void importSids(List<Customer> customerList, Random random) {
+//        // 添加IM账号
+//        int runNums = 0;
+//        long startTime = 0L;
+//
+//        // 每次最多导入100个用户
+//        List<List<Customer>> user100List = getBatchNumList(customerList, 100);
+//
+//        for (List<Customer> users : user100List) {
+//            List<String> userSidList = users.stream().map(obj -> {
+//                Integer userId = obj.getId();
+//                if (obj.getChannelId().equals(101)) {
+//                    return NumberUtils.compressTP(userId.longValue());
+//                } else {
+//                    return IntegerEncryptor.compress(userId);
+//                }
+//            }).collect(Collectors.toList());
+//
+//            int randomNum = random.nextInt(1294967290) + LocalDateTime.now().getSecond() + 1;
+//            String adminSig = TIMGenerateUserSig.genAdminUserSig();
+//            String requestUrl = String.format(IMPORT_ID_URL, SDK_APP_ID, ADMIN_ID, adminSig, randomNum);
+//            JSONObject jsonObject = JSONObject.parseObject("{\"Accounts\":[]}");
+//            JSONArray accounts = jsonObject.getJSONArray("Accounts");
+//            accounts.addAll(userSidList);
+//
+//            if (startTime == 0L) {
+//                startTime = SystemClock.now();
+//            }
+//
+//            // 发起请求
+//            runNums++;
+//            executeUrlRequest(requestUrl, jsonObject);
+//            if (startTime == 0L) {
+//                startTime = SystemClock.now();
+//            }
+//
+//            if (runNums == 100) {
+//                // 限制每秒请求100次
+//                limitRunTimes(startTime);
+//                startTime = 0L;
+//                runNums = 0;
+//            }
+//        }
+//    }
+//
+//    private List<Customer> getCustomers(List<String> userSids) {
+//        List<Customer> customerList;
+//        List<TaiPingCard> userCardList = new ArrayList<>();
+//        if (CollectionUtils.isNotEmpty(userSids)) {
+//            List<Integer> userIdList = userSids.stream().map(IntegerEncryptor::uncompress).collect(Collectors.toList());
+//            // 查询用户表中的信息
+//            Map<Integer, Customer> customerMap = customerProvider.findCustomerByIds(userIdList);
+//            if (MapUtils.isEmpty(customerMap)) {
+//                return null;
+//            }
+//            customerList = new ArrayList<>(customerMap.values());
+//            List<Long> userIdListInDB = customerList.stream().map(BaseModel::getId).map(Integer::longValue).collect(Collectors.toList());
+//            // 查找太平的用户名片信息
+//            userCardList = taipingUserProvider.findUserCards(userIdListInDB);
+//        } else {
+//            Customer queryCustomer = new Customer();
+//            queryCustomer.setUserType(UserTypeEnum.EMPLOYEE);
+//            queryCustomer.setChannelId(101);
+//            // 查询用户表中的信息
+//            Page<Customer> customerPage1 = customerProvider.findCustomerByChannelId(101, UserTypeEnum.EMPLOYEE.getCode(), 1, 100);
+//            customerList = customerPage1.getResult();
+//            if (CollectionUtils.isEmpty(customerList)) {
+//                return null;
+//            }
+//
+//            int pages = customerPage1.getPages();
+//            if (pages > 1) {
+//                for (int i = 2; i < pages + 2; i++) {
+//                    Page<Customer> customerPage = customerProvider.findCustomerByChannelId(101, UserTypeEnum.EMPLOYEE.getCode(), i, 100);
+//                    List<Customer> result = customerPage.getResult();
+//                    if (CollectionUtils.isEmpty(result)) {
+//                        break;
+//                    }
+//                    customerList.addAll(result);
+//
+//                    // 查找太平的用户名片信息
+//                    List<Long> userIdList = result.stream().map(BaseModel::getId).map(Integer::longValue).collect(Collectors.toList());
+//                    List<TaiPingCard> userCards = taipingUserProvider.findUserCards(userIdList);
+//                    if (CollectionUtils.isNotEmpty(userCards)) {
+//                        userCardList.addAll(userCards);
+//                    }
+//
+//                    try {
+//                        Thread.sleep(500);
+//                    } catch (InterruptedException e) {
+//                        log.error("睡眠GG", e);
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//        if (CollectionUtils.isEmpty(userCardList)) {
+//            log.info("无用户名片信息");
+//            return customerList;
+//        }
+//
+//        // 有名片的优先取名片头像和名字,否则取个人中心的信息
+//        Map<Long, TaiPingCard> userIdAndCardMap = userCardList.stream().collect(Collectors.toMap(TaiPingCard::getId, obj -> obj));
+//        for (Customer customer : customerList) {
+//            TaiPingCard taiPingCard = userIdAndCardMap.get(customer.getId().longValue());
+//            if (Objects.isNull(taiPingCard)) {
+//                continue;
+//            }
+//
+//            // 名片名字
+//            String title = taiPingCard.getTitle();
+//            // 名片中的头像
+//            String userImagePath = taiPingCard.getUserImagePath();
+//            if (StringUtils.isNotBlank(title)) {
+//                customer.setNickname(title);
+//            }
+//            if (StringUtils.isNotBlank(userImagePath)) {
+//                customer.setAvatarImagePath(userImagePath);
+//            }
+//        }
+//
+//        return customerList;
+//    }
 
     /**
      * 请求腾讯IM接口
@@ -552,7 +534,7 @@ public class TIMServiceImpl extends TIMConfig implements ITIMService {
      * @param startTime 运行开始时间
      */
     private void limitRunTimes(long startTime) {
-        long endTime = SystemClock.now();
+        long endTime = System.currentTimeMillis();
         long betweenTime = endTime - startTime;
         if (betweenTime < 1000) {
             try {
