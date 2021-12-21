@@ -1,10 +1,7 @@
 package com.kun.utils.common;
 
 
-import com.sun.istack.internal.NotNull;
-
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 企业微信机器人消息发送工具类
@@ -61,7 +58,7 @@ public class WechatRobotMsg {
      * @param mentionedList 需要@用户名，如需@所有人，则集合的值为["@all"]即可
      * @return 文本消息模板
      */
-    public TextMsg getMentionedListTextMsg(String textMsgContent, @NotNull List<String> mentionedList) {
+    public TextMsg getMentionedListTextMsg(String textMsgContent, List<String> mentionedList) {
         TextMsg textMsg = new TextMsg();
         Content content = new Content(textMsgContent);
         content.setMentioned_list(mentionedList);
@@ -76,7 +73,7 @@ public class WechatRobotMsg {
      * @param mentionedMobileList 需要@用户电话号码，如需@所有人，则集合的值为["@all"]即可
      * @return 文本消息模板
      */
-    public TextMsg getMentionedMobileListTextMsg(String textMsgContent, @NotNull List<String> mentionedMobileList) {
+    public TextMsg getMentionedMobileListTextMsg(String textMsgContent, List<String> mentionedMobileList) {
         TextMsg textMsg = new TextMsg();
         Content content = new Content(textMsgContent);
         content.setMentioned_mobile_list(mentionedMobileList);
