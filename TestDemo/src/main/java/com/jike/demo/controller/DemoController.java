@@ -4,6 +4,12 @@ import com.jike.demo.api.FeignClientApi;
 import com.jike.demo.entity.Student;
 import com.jike.demo.service.IDemoService;
 import com.kun.utils.common.WechatRobotMsg;
+import me.zhyd.oauth.AuthRequestBuilder;
+import me.zhyd.oauth.config.AuthConfig;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.request.AuthGiteeRequest;
+import me.zhyd.oauth.request.AuthRequest;
+import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.BoundZSetOperations;
@@ -43,9 +49,21 @@ public class DemoController {
     @GetMapping("get")
     public void getSth(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String serverName = request.getServerName();
-        response.setHeader("Content-Encoding", "gzip");
-        response.setHeader("MyDIYHeader","测试成功");
-        response.setHeader("refresh", "3;url='http://www.baidu.com'");
+
+        AuthRequest authRequest = AuthRequestBuilder.builder()
+                .source("gitee")
+                .authConfig((source) -> {
+                    // 通过 source 动态获取 AuthConfig
+                    // 此处可以灵活的从 sql 中取配置也可以从配置文件中取配置
+                    return AuthConfig.builder()
+                            .clientId("clientId")
+                            .clientSecret("clientSecret")
+                            .redirectUri("redirectUri")
+                            .build();
+                })
+                .build();
+        authRequest.login(AuthCallback.builder().oauth_token("asdf").build());
+        System.out.println(authRequest.authorize(AuthStateUtils.createState()));
     }
 
     @GetMapping("feign")

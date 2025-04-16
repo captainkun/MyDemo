@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.*;
@@ -40,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author qukun
@@ -147,19 +149,8 @@ public class Demo {
 
     @Test
     public void test02() throws Exception {
-        Student student = new Student();
-        student.setAge(10);
-        student.setStudentName("学生姓名");
-        SerializableUtils.serializable(student, "SerializableObject.txt");
-        SerializableUtils.deSerializable("SerializableObject.txt");
-
-//        SerializableUtils.serializable(new Student(){{setAge(1);}}, "SerializableObject.txt");
-
-
-//        mutexGetAndSetIfNeeded(student.toString(), () -> new Student(){{ setAge(90);}});
-//        mutexGetAndSetIfNeeded(student, () -> student);
-
-
+        byte[] decoded = Base64.getDecoder().decode("aHR0cHM6Ly9waG90by40NTkxMjIueHl6L2kvM2U5NDkxNTVhM2M4YThmZmQwMDcyOGE2YTM1ODU2NzIucG5n");
+        System.out.println(new String(decoded));
     }
 
     public <V> V mutexGetAndSetIfNeeded(Object serializedValue, Supplier<? extends V> supplier) {
@@ -367,17 +358,18 @@ public class Demo {
     private static final String FIT_TELL_URL = "https://fittest.pkufi.com/cserverApi/api/shop/coup/state/get?param=";
     @Test
     public void tempTest() {
-        Student student = new Student();
-        student.setStudentName("屈锟");
-        Map<Integer, Student> map = new HashMap<>();
-        map.put(1, student);
-        System.out.println(map);
-        map.forEach((k, v) -> {
-            v.setAge(18);
-            v.setStudentName("帅比");
-        });
-        System.out.println(map);
+    }
 
+    private boolean isNoRemainder(BigDecimal number, BigDecimal divideNumber) {
+        try {
+            // 使用足够大的scale，以确保在有限小数情况下不会抛出异常
+            BigDecimal divide = number.divide(divideNumber);
+            // 目前没有超过两位小数的情况
+            return divide.scale() <= 2;
+        } catch (ArithmeticException e) {
+            // 如果抛出ArithmeticException异常，说明结果是无限小数
+            return false;
+        }
     }
 
     @Test
